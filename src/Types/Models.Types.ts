@@ -34,11 +34,25 @@ export interface IProduct extends Document {
     productDescription?: string;
     productReviews?: string[];
     productSizes: ("L" | "XL" | "XS")[]
-    productColors?: string[];
+    productColors?: ("blue" | "black" | "green")[];
     productQuantity: number;
     createdAt: Date;
     updatedAt: Date;
 }
 
+
+
+
+export interface ICartItem {
+    productId: Types.ObjectId;
+    productSize: string;
+    productColor: string;
+    quantity: number;
+}
+
+export interface ICart extends Document {
+    userId: Types.ObjectId;
+    items: ICartItem[];
+}
 
 

@@ -24,7 +24,7 @@ const createProduct = asynchandler(async (req, res) => {
         productImage,
         productDescription,
         productSizes: productSizes || [],
-        productColors: productSizes || [],
+        productColors: productColors || [],
     }
     if (updateProduct.length === 0) {
         throw new Apierror(400, "At least one field is required to create");
@@ -60,7 +60,7 @@ const updateProduct = asynchandler(async (req, res) => {
         productImage,
         productDescription,
         productSizes: productSizes || [],
-        productColors: productSizes || [],
+        productColors: productColors || [],
     }
     if (updateProduct.length === 0) {
         throw new Apierror(400, "At least one field is required to update");
@@ -111,7 +111,7 @@ const getSingleProduct = asynchandler(async (req, res) => {
     const singleProduct = await PRODUCTSCHEMA.findById(id)
 
     if (!singleProduct) {
-        throw new Apierror(404, "Product  not found")
+        throw new Apierror(404, "Product not found")
     }
     return res.status(201).json(
         new Apiresponse(200, singleProduct, "single Product fetched Successfully")

@@ -12,6 +12,7 @@ import AuthRoutes from "./Routes/AuthRoutes.js";
 import dotenv from "dotenv";
 import path from "path";
 import ProductRoutes from "./Routes/ProductRoutes.js";
+import CartRoutes from "./Routes/CartRoutes.js"
 dotenv.config({ path: "backened/.env" });
 dotenv.config();
 
@@ -38,6 +39,7 @@ app.set("trust proxy", 1); // trust first proxy (Railway load balancer)
 // API routes
 app.use("/auth", AuthRoutes);
 app.use("/product", ProductRoutes)
+app.use("/cart", CartRoutes)
 
 
 // Error handler
