@@ -2,7 +2,6 @@ import { Router } from "express";
 import { createProduct, deleteSingleProduct, getAllProduct, getSingleProduct, updateProduct } from "../Controllers/Product.Controller.js";
 
 
-import { verifyjwt } from "../Middlewares/auth.middleware.js";
 
 
 
