@@ -13,6 +13,7 @@ import dotenv from "dotenv";
 import path from "path";
 import ProductRoutes from "./Routes/ProductRoutes.js";
 import CartRoutes from "./Routes/CartRoutes.js"
+import { errorHandler } from "./Middlewares/error.middleware.js";
 dotenv.config({ path: "backened/.env" });
 dotenv.config();
 
@@ -56,5 +57,6 @@ app.use("/cart", CartRoutes)
 
 // }
 // app.use(errorHandler);
+app.use(errorHandler);
 
 export { app };
