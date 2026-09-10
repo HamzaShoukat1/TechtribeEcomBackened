@@ -12,7 +12,7 @@ const createProduct = asynchandler(async (req, res) => {
 
 
     const { productName, productPrice, productImage, productSizes, productColors, productDescription } = req.body
-    if (!productName || !productPrice || !productPrice || !productColors) {
+    if (!productName || !productPrice || !productPrice || !productColors ) {
         throw new Apierror(400, "please provide at least a product name,price,and quantity")
 
     }
@@ -23,6 +23,7 @@ const createProduct = asynchandler(async (req, res) => {
         productPrice,
         productImage,
         productDescription,
+
         productSizes: productSizes || [],
         productColors: productColors || [],
     }

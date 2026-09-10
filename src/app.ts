@@ -14,11 +14,11 @@ import path from "path";
 import ProductRoutes from "./Routes/ProductRoutes.js";
 import CartRoutes from "./Routes/CartRoutes.js"
 import { errorHandler } from "./Middlewares/error.middleware.js";
+import paymentRoutes from "./Routes/paymentRoutes.js"
 dotenv.config({ path: "backened/.env" });
 dotenv.config();
 
 const app = express();
-
 
 
 // Middleware
@@ -26,6 +26,8 @@ app.use(cors({
   origin: ["http://localhost:3000",],
   credentials: true
 }))
+
+app.use("/payment", express.raw({ type: 'application/json' }), paymentRoutes)
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 
@@ -37,10 +39,13 @@ app.set("trust proxy", 1); // trust first proxy (Railway load balancer)
 // app.use(limiter)
 
 
+
+
 // API routes
 app.use("/auth", AuthRoutes);
 app.use("/product", ProductRoutes)
 app.use("/cart", CartRoutes)
+// app.use("/payment", paymentRoutes)
 
 
 // Error handler

@@ -37,6 +37,7 @@ const ProductSchema = new Schema<IProduct>(
             default: 1
         },
 
+
     },
     {
         timestamps: true
