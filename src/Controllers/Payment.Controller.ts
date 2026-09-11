@@ -7,6 +7,7 @@ import type { Request, Response } from 'express';
 import Stripe from 'stripe';
 
 import { PAYMENTSCHEMA } from "../models/Payment.Model.js";
+import { ORDERSCHEMA } from "../models/Order.Model.js";
 
 const handlePayment = asynchandler(async (req, res) => {
     const { FirstName, LastName, Country, City, StreetAddress, ZIPcode, Phone, Emailaddress } = req.body;
@@ -31,43 +32,86 @@ const handlePayment = asynchandler(async (req, res) => {
         throw new Apierror(404, "Your cart is empty or could not be found");
     }
 
-    const line_items = cart.items.map((item) => {
-        const product = item.productId as any
+    const orderItems = cart.items.map((item: any) => {
+        const product = item.productId as any;
         if (!product) {
             throw new Apierror(404, "One or more products in your cart no longer exist");
         }
 
         return {
-            price_data: {
-                currency: 'usd',
-                product_data: {
-                    name: product.productName || product.productName,
-                    description: product.productDescription || 'Product from your order',
-                    images: product.productImage.url ? [product.productImage.url] : [],
-                },
-                unit_amount: Math.round(product.productPrice * 100),
-            },
+            productId: product._id,
+            name: product.productName,
+            unitPrice: product.productPrice,
             quantity: item.quantity,
+            size: item.productSize,
+            color: item.productColor,
         };
     });
 
-    // 5. Create the Stripe Checkout Session
-    const session = await stripe.checkout.sessions.create({
-        mode: 'payment',
-        payment_method_types: ['card'],
-        line_items: line_items,
-        customer_email: Emailaddress,
+    const subtotal = orderItems.reduce(
+        (total: number, item: { unitPrice: number; quantity: number }) =>
+            total + item.unitPrice * item.quantity,
+        0
+    );
 
-        metadata: {
-            userId: userId.toString(),
-            cartId: cart._id.toString(),
-            customerName: `${FirstName} ${LastName}`,
-            shippingAddress: `${StreetAddress}, ${City}, ${Country} - ${ZIPcode}`,
+    const order = await ORDERSCHEMA.create({
+        userId,
+        cartId: cart._id,
+        items: orderItems,
+        subtotal,
+        customer: {
+            firstName: FirstName,
+            lastName: LastName,
+            email: Emailaddress,
             phone: Phone,
         },
+        shippingAddress: {
+            country: Country,
+            streetAddress: StreetAddress,
+            city: City,
+            zipCode: ZIPcode,
+        },
+    });
 
-        success_url: `${process.env.FRONTEND_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.FRONTEND_URL}/payment-cancelled`,
+    const line_items = orderItems.map((item) => ({
+        price_data: {
+            currency: 'usd',
+            product_data: {
+                name: item.name,
+            },
+            unit_amount: Math.round(item.unitPrice * 100),
+        },
+        quantity: item.quantity,
+    }));
+
+    // Create the Stripe Checkout Session
+    let session: Stripe.Checkout.Session;
+    try {
+        session = await stripe.checkout.sessions.create({
+            mode: 'payment',
+            payment_method_types: ['card'],
+            line_items: line_items,
+            customer_email: Emailaddress,
+
+            metadata: {
+                userId: userId.toString(),
+                cartId: cart._id.toString(),
+                orderId: order._id.toString(),
+                customerName: `${FirstName} ${LastName}`,
+                shippingAddress: `${StreetAddress}, ${City}, ${Country} - ${ZIPcode}`,
+                phone: Phone,
+            },
+
+            success_url: `${process.env.FRONTEND_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.FRONTEND_URL}/payment-cancelled`,
+        });
+    } catch (error) {
+        await ORDERSCHEMA.findByIdAndUpdate(order._id, { status: "FAILED" });
+        throw error;
+    }
+
+    await ORDERSCHEMA.findByIdAndUpdate(order._id, {
+        stripeSessionId: session.id,
     });
 
     return res.status(200).json(
@@ -78,6 +122,7 @@ const handlePayment = asynchandler(async (req, res) => {
         )
     );
 });
+
 
 const webhook = asynchandler(async (req: Request, res: Response) => {
     const sig = req.headers['stripe-signature'];
@@ -94,23 +139,110 @@ const webhook = asynchandler(async (req: Request, res: Response) => {
         throw new Apierror(400, `Webhook Error: ${err.message}`);
     }
 
-    // Handle the event
-    if (event.type === 'checkout.session.completed') {
-        const session = event.data.object as Stripe.Checkout.Session;
+    const handledEvents = new Set([
+        "checkout.session.completed",
+        "checkout.session.expired",
+        "checkout.session.async_payment_failed",
+    ]);
 
-        await PAYMENTSCHEMA.create({
-            // customer_email: session.customer_details?.email || session.customer_email || "",
-            amount: (session.amount_total ?? 0) / 100,
-            // paymentId: session.id,
-            // paymentStatus: session.payment_status,
-            // createdAt: new Date(session.created * 1000),
-        });
+    if (!handledEvents.has(event.type)) {
+        return res.status(200).json({ received: true });
     }
-    console.log("sa", event)
+
+    const session = event.data.object as Stripe.Checkout.Session;
+    const { userId, cartId, orderId } = session.metadata ?? {};
+    const paymentIntentId = typeof session.payment_intent === "string"
+        ? session.payment_intent
+        : session.payment_intent?.id;
+
+    if (!userId || !cartId || !orderId || !session.id || session.amount_total === null) {
+        throw new Apierror(400, "Stripe session is missing required payment metadata");
+    }
+
+    if (event.type === "checkout.session.completed") {
+        const paid = session.payment_status === "paid";
+
+        await PAYMENTSCHEMA.findOneAndUpdate(
+            { stripeSessionId: session.id },
+            {
+                $set: {
+                    stripeSessionId: session.id,
+                    stripePaymentIntentId: paymentIntentId,
+                    userId,
+                    orderId,
+                    amount: (session.amount_total ?? 0) / 100,
+                    currency: (session.currency ?? "usd").toUpperCase(),
+                    status: paid ? "SUCCESSFUL" : "PENDING",
+                    customerEmail: session.customer_details?.email ?? session.customer_email,
+                },
+                $setOnInsert: { idempotencyKey: event.id },
+            },
+            { upsert: true, new: true, runValidators: true }
+        );
+
+        await ORDERSCHEMA.findByIdAndUpdate(orderId, {
+            stripeSessionId: session.id,
+            stripePaymentIntentId: paymentIntentId,
+            status: paid ? "PAID" : "PENDING",
+        });
+
+        if (paid) {
+            await CARTSCHEMA.findOneAndUpdate(
+                { _id: cartId, userId },
+                { $set: { items: [] } }
+            );
+        }
+    }
+
+    if (event.type === "checkout.session.expired" || event.type === "checkout.session.async_payment_failed") {
+        await ORDERSCHEMA.findByIdAndUpdate(orderId, { status: "CANCELLED" });
+        await PAYMENTSCHEMA.findOneAndUpdate(
+            { stripeSessionId: session.id },
+            {
+                $set: {
+                    stripeSessionId: session.id,
+                    stripePaymentIntentId: paymentIntentId,
+                    userId,
+                    orderId,
+                    amount: (session.amount_total ?? 0) / 100,
+                    currency: (session.currency ?? "usd").toUpperCase(),
+                    status: "FAILED",
+                    customerEmail: session.customer_details?.email ?? session.customer_email,
+                },
+                $setOnInsert: { idempotencyKey: event.id },
+            },
+            { upsert: true, new: true, runValidators: true }
+        );
+    }
 
     return res.status(200).json({ received: true });
 });
+
+const getPaymentDetails = asynchandler(async (req, res) => {
+    const userId = req.user?._id;
+    const { session_id } = req.params;
+
+    if (!userId) {
+        throw new Apierror(401, "Unauthorized access");
+    }
+
+    const order = await PAYMENTSCHEMA.findOne({
+        userId: userId,
+        stripeSessionId: session_id
+    }).select("-currency -idempotencyKey -stripePaymentIntentId -updatedAt -customerEmail -status")
+
+    if (!order) {
+        throw new Apierror(404, "Order not found. Please refresh if you just paid.");
+    }
+
+    return res.status(200).json(
+        new Apiresponse(200, order, "Payment details fetched successfully")
+    );
+});
+
+
 export {
     handlePayment,
-    webhook
+    webhook,
+    getPaymentDetails,
 };
