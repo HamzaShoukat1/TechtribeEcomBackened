@@ -12,8 +12,8 @@ const createProduct = asynchandler(async (req, res) => {
 
 
     const { productName, productPrice, productImage, productSizes, productColors, productDescription } = req.body
-    if (!productName || !productPrice || !productPrice || !productColors ) {
-        throw new Apierror(400, "please provide at least a product name,price,and quantity")
+    if (!productName && !productPrice  && !productColors && !productSizes && !productImage && !productDescription) {
+        throw new Apierror(400, "please provide all required fields to create a product")
 
     }
 
@@ -23,12 +23,11 @@ const createProduct = asynchandler(async (req, res) => {
         productPrice,
         productImage,
         productDescription,
-
-        productSizes: productSizes || [],
-        productColors: productColors || [],
+        productSizes: productSizes ,
+        productColors: productColors
     }
-    if (updateProduct.length === 0) {
-        throw new Apierror(400, "At least one field is required to create");
+    if (Object.keys(productData).length === 0) {
+        throw new Apierror(400, "All fields are required to create a product");
     }
 
     const Products = await PRODUCTSCHEMA.create(productData)
@@ -50,7 +49,7 @@ const updateProduct = asynchandler(async (req, res) => {
 
     const { productName, productPrice, productImage, productSizes, productColors, productDescription } = req.body
     if (!productName || !productPrice || !productPrice || !productColors) {
-        throw new Apierror(400, "please provide at least a product name,price,and quantity")
+        throw new Apierror(400, "please update at least a product name,price,and quantity")
 
     }
 
@@ -60,10 +59,10 @@ const updateProduct = asynchandler(async (req, res) => {
         productPrice,
         productImage,
         productDescription,
-        productSizes: productSizes || [],
-        productColors: productColors || [],
+        productSizes: productSizes,
+        productColors: productColors,
     }
-    if (updateProduct.length === 0) {
+    if (Object.keys(updatedFields).length === 0) {
         throw new Apierror(400, "At least one field is required to update");
     }
 

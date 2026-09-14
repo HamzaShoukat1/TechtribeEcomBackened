@@ -41,6 +41,7 @@ const handlePayment = asynchandler(async (req, res) => {
         return {
             productId: product._id,
             name: product.productName,
+            productImage: product.productImage?.url,
             unitPrice: product.productPrice,
             quantity: item.quantity,
             size: item.productSize,

@@ -54,6 +54,9 @@ const SignUp = asynchandler(async (req, res) => {
         throw new Apierror(400, "all fields are required")
 
     }
+    if (password.length < 8 || password.length > 100 || !/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password) || !/[^a-zA-Z0-9]/.test(password)) {
+        throw new Apierror(400, "Password must be 8-100 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character")
+    }
 
     const existedUser = await USERSCHEMA.findOne({
         $or: [{ email: email.toLowerCase() }]
@@ -160,9 +163,27 @@ const getCurrentUser = asynchandler(async (req, res) => {
     )
 
 });
+
+const getAllUsers = asynchandler(async (req, res) => {
+    if (req.user?.role !== "ADMIN") {
+        throw new Apierror(403, "Only admin users can fetch all users")
+    }
+
+    const users = await USERSCHEMA
+        .find({})
+        .select("-password -refreshToken")
+        .sort({ createdAt: -1 })
+        .lean()
+
+    return res.status(200).json(
+        new Apiresponse(200, users, "All users fetched successfully")
+    )
+})
+
 export {
     SignUp,
     Signin,
     Logout,
-    getCurrentUser
+    getCurrentUser,
+    getAllUsers
 }

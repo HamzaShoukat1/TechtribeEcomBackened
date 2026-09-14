@@ -2,13 +2,14 @@ import { Document, Types } from "mongoose";
 
 
 
-
+export type UserRole = "USER" | "ADMIN";
 
 export interface IUser extends Document {
     FirstName: string;
     LastName: string;
     email: string;
     password: string;
+    role: UserRole;
     refreshToken: string,
     UserProducts: Types.ObjectId
     UserProductReview: Types.ObjectId,
@@ -22,19 +23,18 @@ export interface IUser extends Document {
 
 
 
-
-
+interface HashMap {
+  [key: string]: string;
+}
 
 export interface IProduct extends Document {
     productName: string;
     productPrice: number;
-    productImage: {
-        url: string;
-    };
+    productImage: HashMap;
     productDescription?: string;
     productReviews?: string[];
-    productSizes: ("L" | "XL" | "XS")[]
-    productColors?: ("blue" | "black" | "green")[];
+    productSizes: any[],
+    productColors?: any[];
     productQuantity: number;
     createdAt: Date;
     updatedAt: Date;

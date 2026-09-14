@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import type { IProduct } from "../Types/Models.Types.js";
 
+
 const ProductSchema = new Schema<IProduct>(
     {
         productName: {
@@ -10,7 +11,9 @@ const ProductSchema = new Schema<IProduct>(
             type: Number,
         },
         productImage: {
-            url: { type: String, },
+            type: Map,            // Tells Mongoose this path is a Map
+    of: String,           // Specifies that values must be Strings
+    default: new Map()
         },
         productDescription: {
             type: String,
@@ -22,7 +25,6 @@ const ProductSchema = new Schema<IProduct>(
         ],
         productSizes: {
             type: [String],
-            enum: ["L", "XL", "XS"],
             default: [],
         },
         productColors: {
