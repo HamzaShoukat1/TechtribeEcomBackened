@@ -4,6 +4,7 @@ import {
     createProduct,
     deleteSingleProduct,
     getAllProduct,
+    getAllProductForAdmin,
     getSingleProduct,
     updateProduct,
 } from "../Controllers/Product.Controller.js";
@@ -15,13 +16,18 @@ const router = Router();
 
 // Public routes
 router.route("/getAllProducts").get(getAllProduct);
-router.route("/:id").get(getSingleProduct);
 
 // Admin-only routes
 router.route("/create").post(
     verifyjwt,
     verifyAdmin,
     createProduct
+);
+
+router.route("/getAllProductsForAdmin").get(
+    verifyjwt,
+    verifyAdmin,
+    getAllProductForAdmin
 );
 
 router.route("/delete/:id").delete(
@@ -35,5 +41,7 @@ router.route("/update/:id").patch(
     verifyAdmin,
     updateProduct
 );
+
+router.route("/:id").get(getSingleProduct);
 
 export default router;

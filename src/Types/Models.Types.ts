@@ -23,14 +23,16 @@ export interface IUser extends Document {
 
 
 
-interface HashMap {
-  [key: string]: string;
-}
+// interface HashMap {
+//   [key: string]: string;
+// }
 
 export interface IProduct extends Document {
     productName: string;
     productPrice: number;
-    productImage: HashMap;
+    productImage: {
+        url:string
+    };
     productDescription?: string;
     productReviews?: string[];
     productSizes: any[],

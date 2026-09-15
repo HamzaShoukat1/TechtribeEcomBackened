@@ -10,11 +10,8 @@ const ProductSchema = new Schema<IProduct>(
         productPrice: {
             type: Number,
         },
-        productImage: {
-            type: Map,            // Tells Mongoose this path is a Map
-    of: String,           // Specifies that values must be Strings
-    default: new Map()
-        },
+        productImage: { url: { type: String, required: [true, "Product image URL is required"], }, },
+
         productDescription: {
             type: String,
         },

@@ -12,7 +12,7 @@ const createProduct = asynchandler(async (req, res) => {
 
 
     const { productName, productPrice, productImage, productSizes, productColors, productDescription } = req.body
-    if (!productName && !productPrice  && !productColors && !productSizes && !productImage && !productDescription) {
+    if (!productName && !productPrice && !productColors && !productSizes && !productImage && !productDescription) {
         throw new Apierror(400, "please provide all required fields to create a product")
 
     }
@@ -23,7 +23,7 @@ const createProduct = asynchandler(async (req, res) => {
         productPrice,
         productImage,
         productDescription,
-        productSizes: productSizes ,
+        productSizes: productSizes,
         productColors: productColors
     }
     if (Object.keys(productData).length === 0) {
@@ -69,7 +69,7 @@ const updateProduct = asynchandler(async (req, res) => {
     const Products = await PRODUCTSCHEMA.findByIdAndUpdate(
         id,
         { $set: updatedFields },
-        { new: true }
+        {returnDocument:"after"}
     )
     if (!Products) {
         throw new Apierror(400, "product cant update due to some server error")
@@ -87,6 +87,26 @@ const updateProduct = asynchandler(async (req, res) => {
 const getAllProduct = asynchandler(async (req, res) => {
 
     const AllProducts = await PRODUCTSCHEMA.find().select("-productSizes -productColors -productReviews -productQuantity -createdAt -updatedAt")
+
+
+
+    if (AllProducts.length === 0) {
+        return res.status(200).json(
+            new Apiresponse(200, [], "no post")
+        )
+    };
+
+
+    const totalPost = await PRODUCTSCHEMA.countDocuments()
+    return res.status(200).json(
+        new Apiresponse(200, { AllProducts, totalPost }, "products fetched SuccessFully")
+    )
+
+});
+
+const getAllProductForAdmin = asynchandler(async (req, res) => {
+
+    const AllProducts = await PRODUCTSCHEMA.find()
 
 
 
@@ -144,5 +164,6 @@ export {
     getAllProduct,
     getSingleProduct,
     deleteSingleProduct,
-    updateProduct
+    updateProduct,
+    getAllProductForAdmin
 }
