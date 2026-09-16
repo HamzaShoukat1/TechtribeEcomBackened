@@ -2,10 +2,12 @@ import { Schema, model } from "mongoose";
 
 const orderItemSchema = new Schema(
     {
-        productId: { type: Schema.Types.ObjectId,
-             ref: "PRODUCTSCHEMA", required: true },
+        productId: {
+            type: Schema.Types.ObjectId,
+            ref: "PRODUCTSCHEMA", required: true
+        },
         name: { type: String, required: true },
-           productImage: { type: String },
+        productImage: { type: String },
         unitPrice: { type: Number, required: true, min: 0 },
         quantity: { type: Number, required: true, min: 1 },
         size: { type: String },
@@ -25,7 +27,7 @@ const orderSchema = new Schema(
         currency: { type: String, required: true, default: "USD" },
         status: {
             type: String,
-            enum: ["PENDING", "PAID", "FAILED", "CANCELLED"],
+            enum: ["PENDING", "SHIPPED", "DELIVERED",],
             default: "PENDING",
             index: true,
         },
@@ -47,4 +49,4 @@ const orderSchema = new Schema(
 
 orderSchema.index({ userId: 1, createdAt: -1 });
 
-export const ORDERSCHEMA = model("ORDER", orderSchema);
+export const ORDERSCHEMA = model("ORDERSCHEMA", orderSchema);

@@ -18,6 +18,7 @@ export interface IUser extends Document {
 
     isPasswordCorrect(password: string): Promise<boolean>
 
+
 };
 
 

@@ -16,6 +16,7 @@ import CartRoutes from "./Routes/CartRoutes.js"
 import { errorHandler } from "./Middlewares/error.middleware.js";
 import paymentRoutes from "./Routes/paymentRoutes.js"
 import OrdersRoutes from "./Routes/OrderRoutes.js"
+import ReviewRoutes from "./Routes/ReviewRoutes.js"
 dotenv.config({ path: "backened/.env" });
 dotenv.config();
 
@@ -49,7 +50,9 @@ app.use("/auth", AuthRoutes);
 app.use("/product", ProductRoutes)
 app.use("/cart", CartRoutes)
 app.use("/AllOrders",OrdersRoutes)
-// app.use("/payment", paymentRoutes)
+app.use("/order",OrdersRoutes)
+app.use("/review",ReviewRoutes)
+// app.use("/payment", paymentRoutes).
 
 
 // Error handler

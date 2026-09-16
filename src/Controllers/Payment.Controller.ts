@@ -27,12 +27,14 @@ const handlePayment = asynchandler(async (req, res) => {
     const cart = await CARTSCHEMA.findOne({
         userId: userId
     }).populate("items.productId");
+ 
 
     if (!cart || !cart.items || cart.items.length === 0) {
         throw new Apierror(404, "Your cart is empty or could not be found");
     }
 
     const orderItems = cart.items.map((item: any) => {
+     
         const product = item.productId as any;
         if (!product) {
             throw new Apierror(404, "One or more products in your cart no longer exist");
