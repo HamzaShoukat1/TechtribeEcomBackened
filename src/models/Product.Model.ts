@@ -17,7 +17,8 @@ const ProductSchema = new Schema<IProduct>(
         },
         productReviews: [
             {
-                type: String,
+                type: Schema.Types.ObjectId,
+                ref: "REVIEWSSCHEMA",
             },
         ],
         productSizes: {

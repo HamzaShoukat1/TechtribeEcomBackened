@@ -32,7 +32,7 @@ export interface IProduct extends Document {
     productName: string;
     productPrice: number;
     productImage: {
-        url:string
+        url: string
     };
     productDescription?: string;
     productReviews?: string[];

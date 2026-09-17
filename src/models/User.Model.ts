@@ -37,15 +37,15 @@ const userSchema = new Schema<IUser>({
     },
 
 
-    UserProductReview: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: "PRODUCTSCHEMA",
-            default: []
+    // UserProductReview: [
+    //     {
+    //         type: Schema.Types.ObjectId,
+    //         ref: "PRODUCTSCHEMA",
+    //         default: []
 
 
-        }
-    ]
+    //     }
+    // ]
 
 
 

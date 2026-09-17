@@ -35,6 +35,7 @@ const createProduct = asynchandler(async (req, res) => {
         throw new Apierror(400, "product cant create due to some server error")
 
     }
+    console.log('sa', Products)
 
     return res.status(201).json(
         new Apiresponse(201, Products, "Product create Successfully")
@@ -69,7 +70,7 @@ const updateProduct = asynchandler(async (req, res) => {
     const Products = await PRODUCTSCHEMA.findByIdAndUpdate(
         id,
         { $set: updatedFields },
-        {returnDocument:"after"}
+        { returnDocument: "after" }
     )
     if (!Products) {
         throw new Apierror(400, "product cant update due to some server error")

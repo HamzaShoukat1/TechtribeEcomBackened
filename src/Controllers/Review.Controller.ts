@@ -66,16 +66,7 @@ const GetProductReviews = asynchandler(async (req, res) => {
         new Apiresponse(200, reviews, "Reviews fetched successfully for specific user")
     );
 
-    // const orders = await ORDERSCHEMA.find({ productId }).select("_id");
-    // // console.log("sas", orders)
-
-    // const orderIds = orders.map((item)=> item.)
-    // // console.log("ordie id", orderIds)
-
-    // const reviews = await REVIEWSSCHEMA.find()
-    //     .populate("userId", "FirstName email")
-    //     .sort({ createdAt: -1 });
-    // // console.log("rev", reviews)
+   
 
 
 });
