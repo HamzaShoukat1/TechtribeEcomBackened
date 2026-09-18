@@ -1,7 +1,10 @@
-import "dotenv/config";
+import 'dotenv/config';
+
+
+
 import Stripe from "stripe";
 
-const APIKEY = process.env.STRIPE_SECRET_KEY;
+const APIKEY = process.env.STRIPE_SECRET_KEY!;
 
 if (!APIKEY) {
   throw new Error("STRIPE_API_KEY is not defined in environment variables or not load");
