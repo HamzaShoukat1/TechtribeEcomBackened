@@ -76,7 +76,7 @@ const handlePayment = asynchandler(async (req, res) => {
         },
     });
 
-    const line_items = orderItems.map((item) => ({
+    const line_items = orderItems.map((item:any) => ({
         price_data: {
             currency: 'usd',
             product_data: {
