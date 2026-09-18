@@ -1,4 +1,4 @@
-import type { TokenPayLoad } from "../Types/types.js"
+import type { TokenPayLoad } from "../types/types.js"
 import jwt from "jsonwebtoken"
 import { Apierror } from "../utils/ApiError.js"
 import { USERSCHEMA } from "../models/User.Model.js"

@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import type { ICart } from "../Types/Models.Types.js";
+import type { ICart } from "../types/Models.Types.js";
 
 const CartSchema = new Schema<ICart>(
     {
