@@ -1,4 +1,4 @@
-import { type TokenPayLoad } from "../Types/types.js"
+import { type TokenPayLoad } from "../types/types.js"
 import { type CookieOptions } from "express";
 import jwt from "jsonwebtoken"
 

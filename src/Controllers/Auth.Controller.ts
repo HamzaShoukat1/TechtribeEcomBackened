@@ -1,6 +1,6 @@
 import { USERSCHEMA } from "../models/User.Model.js"
 import { generateAccessToken, generateRefreshToken, options } from "../Services/Token.Service.js"
-import type { IUser } from "../Types/Models.Types.js"
+import type { IUser } from "../types/Models.Types.js"
 import { Apierror } from "../utils/ApiError.js"
 import { Apiresponse } from "../utils/ApiResponse.js"
 import { asynchandler } from "../utils/AsyncHandler.js"

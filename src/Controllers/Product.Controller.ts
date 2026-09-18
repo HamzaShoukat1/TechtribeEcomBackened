@@ -1,5 +1,5 @@
 import { PRODUCTSCHEMA } from "../models/Product.Model.js"
-import type { IProduct } from "../Types/Models.Types.js"
+import type { IProduct } from "../types/Models.Types.js"
 import { Apierror } from "../utils/ApiError.js"
 import { Apiresponse } from "../utils/ApiResponse.js"
 import { asynchandler } from "../utils/AsyncHandler.js"
