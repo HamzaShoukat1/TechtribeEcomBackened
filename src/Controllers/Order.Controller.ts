@@ -37,28 +37,39 @@ const getUserOrdersHistory = asynchandler(async (req, res) => {
 })
 
 
-const getAllOrdersForAdmin = asynchandler(async (req, res) => {
-    const AllOrders = await ORDERSCHEMA
-        .find()
-        .populate("items.productId", "productImage")
-        .sort({ createdAt: -1 })
-        .lean()
+const getOrderDetail = asynchandler(async (req, res) => {
 
-    const ordersWithProductImages = AllOrders.map((order) => ({
+
+    const orderId = req.params.id
+
+    if (!orderId) {
+        throw new Apierror(400, "Order ID is required");
+    }
+
+    const order = await ORDERSCHEMA
+        .findById(orderId)
+        .populate("items.productId", "productImage")
+        .lean().select('-status')
+
+    if (!order) {
+        throw new Apierror(404, "Order not found");
+    }
+    const orderWithProductImages = {
         ...order,
         items: order.items.map((item: any) => ({
             ...item,
             productImage:
                 item.productImage ?? item.productId?.productImage?.url,
-            productId: item.productId?._id ?? item.productId
+            productId: item.productId?._id ?? item.productId,
         })),
-    }))
-    console.log("sa", ordersWithProductImages)
-    return res.status(200).json(
-        new Apiresponse(200, ordersWithProductImages, "All Orders fetched successfully")
-    )
-})
+    };
 
+    return res.status(200).json(
+        new Apiresponse(200, orderWithProductImages, "Order detail fetched successfully")
+    );
+
+
+})
 const getOrdersForTable = asynchandler(async (req, res) => {
     const orders = await ORDERSCHEMA
         .find()
@@ -150,6 +161,6 @@ const changedOrderStatus = asynchandler(async (req, res) => {
 export {
     getUserOrdersHistory,
     getOrdersForTable,
-    getAllOrdersForAdmin,
+    getOrderDetail,
     changedOrderStatus
 }

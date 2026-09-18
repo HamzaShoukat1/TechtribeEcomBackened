@@ -186,7 +186,7 @@ const webhook = asynchandler(async (req: Request, res: Response) => {
         await ORDERSCHEMA.findByIdAndUpdate(orderId, {
             stripeSessionId: session.id,
             stripePaymentIntentId: paymentIntentId,
-            status: paid ? "PAID" : "PENDING",
+            status: paid ? "PENDING" : "FAILED"
         });
 
         if (paid) {

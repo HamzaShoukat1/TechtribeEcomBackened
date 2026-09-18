@@ -4,11 +4,6 @@ import express from "express"
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import AuthRoutes from "./Routes/AuthRoutes.js";
-// import UserRoutes from "./Routes/User.Routes.js";
-// import PostRoutes from "./Routes/Post.Routes.js";
-// import NotificationRoutes from "./Routes/Notification.Routes.js";
-// import { errorHandler } from "./Middlewares/error.middleware.js";
-// import { limiter } from "./Middlewares/express.ratelimit.js";
 import dotenv from "dotenv";
 import path from "path";
 import ProductRoutes from "./Routes/ProductRoutes.js";
@@ -18,10 +13,15 @@ import paymentRoutes from "./Routes/paymentRoutes.js"
 import OrdersRoutes from "./Routes/OrderRoutes.js"
 import ContactRoutes from "./Routes/ContactRoute.js"
 import ReviewRoutes from "./Routes/ReviewRoutes.js"
+import uploadRoutes from "./Routes/uploadRoutes.js"
+import StatsRoutes from "./Routes/State.Routes.js"
+import { apiLimiter } from "./Middlewares/rate.Limitter.js";
 dotenv.config({ path: "backened/.env" });
+
 dotenv.config();
 
 const app = express();
+app.use(apiLimiter)
 
 
 // Middleware
@@ -50,10 +50,12 @@ app.set("trust proxy", 1); // trust first proxy (Railway load balancer)
 app.use("/auth", AuthRoutes);
 app.use("/product", ProductRoutes)
 app.use("/cart", CartRoutes)
-app.use("/AllOrders",OrdersRoutes)
-app.use("/order",OrdersRoutes)
-app.use("/review",ReviewRoutes)
-app.use("/contact",ContactRoutes)
+app.use("/AllOrders", OrdersRoutes)
+app.use("/order", OrdersRoutes)
+app.use("/review", ReviewRoutes)
+app.use("/contact", ContactRoutes)
+app.use("/dashboard", StatsRoutes)
+app.use("/upload", uploadRoutes)
 // app.use("/payment", paymentRoutes).
 
 
