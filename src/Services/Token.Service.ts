@@ -31,7 +31,7 @@ export const generateRefreshToken = function (payload: TokenPayLoad) {
 
 export const options: CookieOptions = {
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: "none",
     secure: process.env.NODE_ENV === "production",
     maxAge: 7 * 24 * 60 * 60 * 1000,
 
