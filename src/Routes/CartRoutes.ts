@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { AddToCartItem, getCartDetails, removeFromCart } from "../Controllers/CartController.js"
+import { AddToCartItem, getCartDetails, removeFromCart } from "../Controllers/Cart.Controller.js"
 import { verifyjwt } from "../Middlewares/auth.middleware.js"
 const router = Router()
 
