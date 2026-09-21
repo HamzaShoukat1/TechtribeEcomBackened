@@ -57,7 +57,7 @@ app.use(
         return callback(null, true);
       }
 
-      console.log("❌ CORS blocked origin:", origin);
+      console.log(" CORS blocked origin:", origin);
 
       return callback(
         new Error(`CORS blocked origin: ${origin}`)
@@ -177,15 +177,7 @@ app.use("/dashboard", StatsRoutes);
 app.use("/upload", uploadRoutes);
 
 
-/*
-|--------------------------------------------------------------------------
-| Health Check
-|--------------------------------------------------------------------------
-|
-| Useful for checking whether Railway can actually reach
-| your Express application.
-|
-*/
+
 
 app.get("/", (_req, res) => {
   res.status(200).json({
