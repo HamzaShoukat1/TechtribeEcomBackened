@@ -52,14 +52,14 @@ const AddToCartItem = asynchandler(async (req, res) => {
     } else {
         // cart.items = cart.items.filter(item => item && item.productId);
 
-        const alreadyExist = cart.items.find((item:any) =>
+        const alreadyExist = cart.items.find((item: any) =>
             item?.productId?.toString() === id &&
             item.productSize === productSize &&
             item.productColor === productColor
         );
 
         if (alreadyExist) {
-            cart.items = cart.items.map((item:any) => {
+            cart.items = cart.items.map((item: any) => {
                 if (
                     item?.productId?.toString() === id &&
                     item.productSize === productSize &&

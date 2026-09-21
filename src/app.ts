@@ -42,7 +42,6 @@ const allowedOrigins = [
   "http://localhost:5173",
 ].filter(Boolean) as string[];
 
-console.log("Allowed CORS origins:", allowedOrigins);
 
 app.use(
   cors({
@@ -57,7 +56,6 @@ app.use(
         return callback(null, true);
       }
 
-      console.log(" CORS blocked origin:", origin);
 
       return callback(
         new Error(`CORS blocked origin: ${origin}`)
