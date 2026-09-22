@@ -87,51 +87,47 @@ const SignUp = asynchandler(async (req, res) => {
 
 
 const Signin = asynchandler(async (req, res) => {
-    // getData 
-    //find the user 
-    //password check
-    //access and refreshToken
-    // send cookies
+    const { email, password } = req.body;
 
-    const { email, password } = req.body
     if (!email || !password) {
-        throw new Apierror(400, "username or password is required")
-
-    };
-
-    const user = await USERSCHEMA.findOne({
-        email
-    })
-
-    if (!user) {
-        throw new Apierror(400, "user does not exist")
+        throw new Apierror(400, "Email or password is required");
     }
 
-    const isPasswordValid = await user.isPasswordCorrect(password)
+    const user = await USERSCHEMA.findOne({
+        email: email.toLowerCase(),
+    });
+
+    if (!user) {
+        throw new Apierror(400, "User does not exist");
+    }
+
+    const isPasswordValid = await user.isPasswordCorrect(password);
+
     if (!isPasswordValid) {
-        throw new Apierror(401, "Invalid password ")
+        throw new Apierror(401, "Invalid password");
+    }
 
-    };
+    const { accessToken, refreshToken } =
+        await generateAccessAndRefreshToken(user._id.toString());
 
-    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id.toString())
-    const logedInUser = await USERSCHEMA.findById(user._id).select("-password -refreshToken")
+    const loggedInUser = await USERSCHEMA
+        .findById(user._id)
+        .select("-password -refreshToken");
 
-
-    return res.status(200).
-        cookie("accessToken", accessToken, options)
+    return res
+        .status(200)
+        .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
         .json(
             new Apiresponse(
                 200,
                 {
-                    user: logedInUser, accessToken, refreshToken
-                }
-
+                    user: loggedInUser,
+                },
+                "User logged in successfully"
             )
-        )
-
-
-})
+        );
+});
 
 
 const Logout = asynchandler(async (req, res) => {
