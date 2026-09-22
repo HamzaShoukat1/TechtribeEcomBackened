@@ -3,10 +3,10 @@ import mongoose, { Schema } from "mongoose";
 
 const ReviewsSchema = new Schema<any>(
     {
-        products: {
+        products: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'PRODUCTSCHEMA',
-        },
+        }],
         orderId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "ORDERSCHEMA",
