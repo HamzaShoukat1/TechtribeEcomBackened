@@ -11,8 +11,8 @@ const CreateReviews = asynchandler(async (req, res) => {
     }
 
     const { orderId, rating, comment } = req.body;
-    if (!orderId || !rating || !comment) {
-        throw new Apierror(400, "Order ID, rating, and comment are all required");
+    if (!orderId || !rating ) {
+        throw new Apierror(400, "cant added comment due to server issue");
     }
 
     const alreadyReviewed = await REVIEWSSCHEMA.findOne({ orderId, userId });
