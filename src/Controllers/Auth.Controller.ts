@@ -123,6 +123,8 @@ const Signin = asynchandler(async (req, res) => {
                 200,
                 {
                     user: loggedInUser,
+                    accessToken:accessToken,
+                    refreshToken:refreshToken
                 },
                 "User logged in successfully"
             )

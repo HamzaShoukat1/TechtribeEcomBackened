@@ -43,6 +43,11 @@ const orderSchema = new Schema(
             city: { type: String, required: true },
             zipCode: { type: String, required: true },
         },
+        alreadyReviewed: {
+            type: Boolean,
+            required: false,
+            default: false
+        }
     },
     { timestamps: true }
 );

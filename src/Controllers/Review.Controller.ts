@@ -11,13 +11,8 @@ const CreateReviews = asynchandler(async (req, res) => {
     }
 
     const { orderId, rating, comment } = req.body;
-    if (!orderId || !rating ) {
-        throw new Apierror(400, "cant added comment due to server issue");
-    }
-
-    const alreadyReviewed = await REVIEWSSCHEMA.findOne({ orderId, userId });
-    if (alreadyReviewed) {
-        throw new Apierror(400, "You have already reviewed this product");
+    if (!orderId || !rating) {
+        throw new Apierror(400, "Order ID and rating are required");
     }
 
     const order = await ORDERSCHEMA.findById(orderId);
@@ -25,9 +20,14 @@ const CreateReviews = asynchandler(async (req, res) => {
         throw new Apierror(404, "Order not found");
     }
 
+    if (order.alreadyReviewed) {
+        throw new Apierror(400, "You have already reviewed this order");
+    }
 
+    // 3. Extract product IDs from the order items
     const productsId = order.items.map(item => item.productId);
 
+    // 4. Create the review
     const review = await REVIEWSSCHEMA.create({
         userId,
         orderId,
@@ -40,10 +40,14 @@ const CreateReviews = asynchandler(async (req, res) => {
         throw new Apierror(500, "Review could not be created due to a server issue");
     }
 
+    order.alreadyReviewed = true;
+    await order.save();
+
     return res.status(201).json(
         new Apiresponse(201, review, "Review created successfully")
     );
 });
+
 
 
 
@@ -66,7 +70,7 @@ const GetProductReviews = asynchandler(async (req, res) => {
         new Apiresponse(200, reviews, "Reviews fetched successfully for specific user")
     );
 
-   
+
 
 
 });
