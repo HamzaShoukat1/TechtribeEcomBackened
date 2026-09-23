@@ -27,7 +27,6 @@ const ReviewsSchema = new Schema<any>(
             type: String,
             required: true,
             trim: true,
-            maxlength: 200
         },
 
 
