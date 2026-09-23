@@ -158,6 +158,67 @@ const deleteSingleProduct = asynchandler(async (req, res) => {
 
 })
 
+export const searchProducts = asynchandler(async (req, res) => {
+        const query = String(req.query.q || "").trim();
+
+        if (!query) {
+
+            return res.status(200).json(
+                new Apiresponse(
+                    200,
+                    [],
+                    "Search query is empty"
+                )
+            )
+        }
+
+        if (query.length < 2) {
+            return res.status(200).json(
+                new Apiresponse(
+                    200,
+                    [],
+                    "Search query must contain at least 2 characters"
+                )
+            );
+        }
+
+        const escapedQuery = query.replace(
+            /[.*+?^${}()|[\]\\]/g,
+            "\\$&"
+        );
+
+        const products = await PRODUCTSCHEMA.find({
+            $or: [
+                {
+                    productName: {
+                        $regex: escapedQuery,
+                        $options: "i",
+                    },
+                },
+                {
+                    productDescription: {
+                        $regex: escapedQuery,
+                        $options: "i",
+                    },
+                },
+            ],
+        })
+            .select(
+                "_id productName productDescription productPrice productImage"
+            )
+            .limit(20)
+            .lean();
+
+        return res.status(200).json(
+            new Apiresponse(
+                200,
+                products,
+                "Products searched successfully"
+            )
+        );
+    }
+);
+
 
 
 export {

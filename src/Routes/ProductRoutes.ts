@@ -6,6 +6,7 @@ import {
     getAllProduct,
     getAllProductForAdmin,
     getSingleProduct,
+    searchProducts,
     updateProduct,
 } from "../Controllers/Product.Controller.js";
 
@@ -29,7 +30,6 @@ router.route("/getAllProductsForAdmin").get(
     verifyAdmin,
     getAllProductForAdmin
 );
-
 router.route("/delete/:id").delete(
     verifyjwt,
     verifyAdmin,
@@ -42,6 +42,7 @@ router.route("/update/:id").patch(
     updateProduct
 );
 
+router.route("/search").get(searchProducts)
 router.route("/:id").get(getSingleProduct);
 
 export default router;
