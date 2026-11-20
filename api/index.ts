@@ -2,11 +2,9 @@
 import { app } from "../src/app.js";
 import connectDB from "../src/db/db.js";
 
-export default async function handler(req: any, res: any) {
-  try {
-    await connectDB();
-  } catch (err) {
-    console.error("MongoDB connection error in serverless handler:", err);
-  }
-  return app(req, res);
-}
+// Ensure DB is connected for serverless invocations
+connectDB().catch((err) => {
+  console.error("MongoDB connection error:", err);
+});
+
+export default app;

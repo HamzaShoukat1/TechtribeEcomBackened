@@ -17,6 +17,7 @@ import StatsRoutes from "./Routes/State.Routes.js";
 
 import { errorHandler } from "./Middlewares/error.middleware.js";
 import { apiLimiter } from "./Middlewares/rate.Limitter.js";
+import connectDB from "./db/db.js";
 
 dotenv.config();
 
@@ -29,6 +30,15 @@ const app = express();
 */
 
 app.set("trust proxy", 1);
+
+app.use(async (_req, _res, next) => {
+  try {
+    await connectDB();
+  } catch (error) {
+    console.error("Database connection error in middleware:", error);
+  }
+  next();
+});
 
 
 /*
