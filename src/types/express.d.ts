@@ -1,4 +1,4 @@
-import { IUser } from './Models.Types'; // Adjust path to your user type interface
+import type { IUser } from "./Models.Types.js";
 
 declare global {
   namespace Express {
@@ -8,4 +8,4 @@ declare global {
   }
 }
 
-export { };
+export {};

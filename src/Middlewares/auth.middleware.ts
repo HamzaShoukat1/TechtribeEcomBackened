@@ -1,3 +1,4 @@
+/// <reference path="../types/express.d.ts" />
 import type { TokenPayLoad } from "../types/types.js"
 import jwt from "jsonwebtoken"
 import { Apierror } from "../utils/ApiError.js"

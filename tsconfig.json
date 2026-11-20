@@ -6,7 +6,10 @@
     "noUnusedLocals": true,
     "module": "nodenext",
     "target": "esnext",
-    "types": [],
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types"
+    ],
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,

@@ -1,3 +1,4 @@
+/// <reference path="../types/express.d.ts" />
 import type { Request, Response, NextFunction } from "express";
 import { Apierror } from "../utils/ApiError.js";
 

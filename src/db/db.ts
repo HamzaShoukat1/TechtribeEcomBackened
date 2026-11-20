@@ -3,14 +3,15 @@ import { DB_NAME } from "../constaints.js";
 
 const connectDB = async () => {
     try {
+        if (mongoose.connection.readyState >= 1) {
+            return;
+        }
         const connectionInstance = await mongoose.connect(`${process.env.MONGODB_URL}/${DB_NAME}`)
         console.log(`/MONGOdb connected !! db host:${connectionInstance.connection.host}`)
 
     } catch (error) {
         console.log("mongodb connection failed ", error);
-        process.exit(1)
-
-
+        throw error;
     }
 
 }
