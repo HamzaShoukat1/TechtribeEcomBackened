@@ -7,19 +7,18 @@ const connectDB = async () => {
             return;
         }
         if (!process.env.MONGODB_URL) {
-            console.error("MONGODB_URL is not defined in environment variables");
-            return;
+            throw new Error("MONGODB_URL is not defined in environment variables");
         }
-        const connectionInstance = await mongoose.connect(`${process.env.MONGODB_URL}/${DB_NAME}`)
-        console.log(`/MONGOdb connected !! db host:${connectionInstance.connection.host}`)
+        // Using { dbName } avoids any double-slash or query-string formatting bugs
+        const connectionInstance = await mongoose.connect(process.env.MONGODB_URL, {
+            dbName: DB_NAME,
+        });
+        console.log(`MongoDB connected !! DB Host: ${connectionInstance.connection.host}`);
 
     } catch (error) {
-        console.log("mongodb connection failed ", error);
+        console.error("MongoDB connection failed:", error);
         throw error;
     }
+};
 
-}
-export default connectDB
-
-
-
+export default connectDB;

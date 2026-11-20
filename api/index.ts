@@ -2,9 +2,19 @@
 import { app } from "../src/app.js";
 import connectDB from "../src/db/db.js";
 
-// Ensure DB is connected for serverless invocations
-connectDB().catch((err) => {
-  console.error("MongoDB connection error:", err);
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error("Database connection failed:", error);
+    res.status(500).json({
+      success: false,
+      message: "Database connection failed",
+      errors: [],
+      data: null,
+    });
+  }
 });
 
 export default app;
