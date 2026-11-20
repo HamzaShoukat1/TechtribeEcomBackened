@@ -1,15 +1,25 @@
-import 'dotenv/config';
-
-
-
+import "dotenv/config";
 import Stripe from "stripe";
 
-const APIKEY = process.env.STRIPE_SECRET_KEY!;
+let stripeInstance: Stripe | null = null;
 
-if (!APIKEY) {
-  throw new Error("STRIPE_API_KEY is not defined in environment variables or not load");
-}
+const getStripe = (): Stripe => {
+  if (!stripeInstance) {
+    const APIKEY = process.env.STRIPE_SECRET_KEY;
+    if (!APIKEY) {
+      throw new Error("STRIPE_SECRET_KEY is not defined in environment variables");
+    }
+    stripeInstance = new Stripe(APIKEY);
+  }
+  return stripeInstance;
+};
 
-const stripe = new Stripe(APIKEY);
+const stripe = new Proxy({} as Stripe, {
+  get(_target, prop) {
+    const instance = getStripe();
+    const value = (instance as any)[prop];
+    return typeof value === "function" ? value.bind(instance) : value;
+  },
+});
 
 export default stripe;

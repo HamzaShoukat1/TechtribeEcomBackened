@@ -163,7 +163,7 @@ app.use("/upload", uploadRoutes);
 
 
 
-app.get("/", (_req, res) => {
+app.get(["/", "/api"], (_req, res) => {
   res.status(200).json({
     success: true,
     message: "TechTribe backend is running",
